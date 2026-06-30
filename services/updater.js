@@ -4,7 +4,7 @@ const { buildWidget } = require("./widget");
 const { updateDiscordWidget } = require("./discordwidget");
 
 async function updateUser(discordId) {
-    const user = storage.getUser(discordId);
+    const user = await storage.getUser(discordId);
     if (!user) throw new Error("You haven't linked your Riot account.");
 
     const stats = await tracker.getMMR("ap", user.riotName, user.riotTag);

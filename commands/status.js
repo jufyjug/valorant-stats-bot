@@ -2,7 +2,7 @@ const storage = require("../services/storage");
 
 async function execute(interaction) {
 
-    const user = storage.getUser(interaction.user.id);
+    const user = await storage.getUser(interaction.user.id);
 
     if (!user) {
         return interaction.reply({

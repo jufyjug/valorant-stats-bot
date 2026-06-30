@@ -17,7 +17,7 @@ async function execute(interaction) {
     const name = parts[0];
     const tag = parts[1];
 
-    storage.setUser(interaction.user.id, name, tag);
+    await storage.setUser(interaction.user.id, name, tag);
 
     await interaction.reply({
         content: `✅ Linked **${name}#${tag}**`,

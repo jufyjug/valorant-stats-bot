@@ -22,18 +22,19 @@ client.once(Events.ClientReady, () => {
     setInterval(async () => {
     console.log("🔄 Running auto-update check...");
 
-    const data = storage.getAllUsers();
+    const data = await storage.getAllUsers();
 
-    for (const [discordId, user] of Object.entries(data)) {
+    for (const user of data) {
         if (!user.autoUpdate) continue;
 
         try {
-            const stats = await updateUser(discordId);
+            const stats = await updateUser(user.discordId);
             console.log(`✅ Auto-updated ${user.riotName}#${user.riotTag}: ${stats.currentRank}`);
         } catch (err) {
-            console.error(`❌ Auto-update failed for ${discordId}:`, err.message);
+            console.error(`❌ Auto-update failed for ${user.discordId}:`, err.message);
         }
     }
+
 }, 60 * 60 * 1000); // 1 Hour
 });
 

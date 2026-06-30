@@ -6,7 +6,7 @@ async function execute(interaction) {
 
     const value = mode === "on";
 
-    storage.setAutoUpdate(interaction.user.id, value);
+    await storage.setAutoUpdate(interaction.user.id, value);
 
     await interaction.reply({
         content: `🔄 Auto update is now **${value ? "ON" : "OFF"}**`,

@@ -1,77 +1,61 @@
-const fs = require("fs");
-const path = require("path");
+const { MongoClient } = require("mongodb");
 
-const FILE = path.join(__dirname, "../data/users.json");
+const client = new MongoClient(process.env.MONGODB_URI);
+let db;
 
-function loadData() {
-    if (!fs.existsSync(FILE)) return {};
-    return JSON.parse(fs.readFileSync(FILE, "utf8"));
+async function connect() {
+    if (!db) {
+        await client.connect();
+        db = client.db("valorant-bot");
+    }
+    return db.collection("users");
 }
 
-function saveData(data) {
-    fs.writeFileSync(FILE, JSON.stringify(data, null, 2));
+async function setUser(discordId, riotName, riotTag) {
+    const col = await connect();
+    await col.updateOne(
+        { discordId },
+        { $set: { discordId, riotName, riotTag, autoUpdate: false, lastUpdate: 0 } },
+        { upsert: true }
+    );
 }
 
-function setUser(discordId, riotName, riotTag) {
-    const data = loadData();
-
-    data[discordId] = {
-        riotName,
-        riotTag,
-        autoUpdate: false,
-        lastUpdate: 0
-    };
-
-    saveData(data);
+async function getUser(discordId) {
+    const col = await connect();
+    return col.findOne({ discordId });
 }
 
-function getUser(discordId) {
-    return loadData()[discordId];
+async function setAutoUpdate(discordId, value) {
+    const col = await connect();
+    await col.updateOne({ discordId }, { $set: { autoUpdate: value } });
 }
 
-function setAutoUpdate(discordId, value) {
-    const data = loadData();
-
-    if (!data[discordId]) return;
-
-    data[discordId].autoUpdate = value;
-
-    saveData(data);
+async function getAutoUpdate(discordId) {
+    const user = await getUser(discordId);
+    return user?.autoUpdate ?? false;
 }
 
-function getAutoUpdate(discordId) {
-    const data = loadData();
-    return data[discordId]?.autoUpdate ?? false;
+async function updateLastUpdate(discordId) {
+    const col = await connect();
+    await col.updateOne({ discordId }, { $set: { lastUpdate: Date.now() } });
 }
 
-function updateLastUpdate(discordId) {
-    const data = loadData();
-
-    if (!data[discordId]) return;
-
-    data[discordId].lastUpdate = Date.now();
-
-    saveData(data);
+async function setTokens(discordId, accessToken, refreshToken) {
+    const col = await connect();
+    await col.updateOne({ discordId }, { $set: { accessToken, refreshToken } });
 }
 
-function setTokens(discordId, accessToken, refreshToken) {
-    const data = loadData();
-    if (!data[discordId]) return;
-    data[discordId].accessToken = accessToken;
-    data[discordId].refreshToken = refreshToken;
-    saveData(data);
-}
-
-function getTokens(discordId) {
-    const user = loadData()[discordId];
+async function getTokens(discordId) {
+    const user = await getUser(discordId);
     return {
         accessToken: user?.accessToken ?? null,
         refreshToken: user?.refreshToken ?? null
     };
 }
 
-function getAllUsers() {
-    return loadData();
+async function getAllUsers() {
+    const col = await connect();
+    return col.find({}).toArray();
 }
 
 module.exports = {
@@ -79,5 +63,5 @@ module.exports = {
     setAutoUpdate, getAutoUpdate,
     updateLastUpdate,
     setTokens, getTokens,
-    getAllUsers 
+    getAllUsers
 };
