@@ -1,7 +1,7 @@
 const storage = require("./storage");
 const tracker = require("./tracker");
 const { buildWidget } = require("./widget");
-const { updateDiscordWidget } = require("./discordWidget");
+const { updateDiscordWidget } = require("./discordwidget");
 
 async function updateUser(discordId) {
     const user = storage.getUser(discordId);
