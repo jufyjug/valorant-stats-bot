@@ -60,7 +60,8 @@ app.post("/save-token", (req, res) => {
 });
 
 function startOAuthServer() {
-    app.listen(3000, () => console.log("✅ OAuth server running on :3000"));
+    const port = process.env.PORT || 3000;
+    app.listen(port, '0.0.0.0', () => console.log(`✅ OAuth server running on :${port}`));
 }
 
 module.exports = { startOAuthServer };
