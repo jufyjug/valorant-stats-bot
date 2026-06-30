@@ -54,7 +54,7 @@ app.post("/save-token", (req, res) => {
     console.log("✅ Bearer token received for user:", state);
     console.log("Token preview:", token.slice(0, 20) + "...");
 
-    await storage.setTokens(state, token, null); // implicit flow has no refresh token
+    storage.setTokens(state, token, null); // implicit flow has no refresh token
 
     res.send("ok");
 });
