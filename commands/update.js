@@ -16,7 +16,13 @@ async function execute(interaction) {
 
         console.error(err);
 
-        await interaction.editReply(`❌ ${err.message}`);
+        
+        let message = err.message;
+            if (err.message.includes("404")) {
+                message = "❌ No competitive data found. Make sure you've played at least one ranked game.";
+            }
+            
+            await interaction.editReply(`❌ ${err.message}`);
 
     }
 }
