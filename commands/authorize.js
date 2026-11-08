@@ -3,7 +3,7 @@ async function execute(interaction) {
 
     const url = `https://discord.com/oauth2/authorize` +
         `?client_id=${process.env.CLIENT_ID}` +
-        `&response_type=token` +           // ← change from "code" to "token"
+        `&response_type=code` +           // ← change from "code" to "token"
         `&redirect_uri=${encodeURIComponent(process.env.REDIRECT_URI)}` +
         `&scope=openid%20sdk.social_layer` +
         `&state=${userId}`;
